@@ -1,3 +1,9 @@
+
+
 export default function Analysis(){
-    return "anaysis"
+    return (
+        <div>
+            Analysis
+        </div>
+    );
 }
