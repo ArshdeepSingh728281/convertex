@@ -1,7 +1,38 @@
+"use client"
 
+import { useState } from "react"
 import { Search, Zap, Target, Layers, ArrowRight, Shield, MousePointer2, CheckCircle2 } from 'lucide-react';
 
 export default function Home() {
+
+  const [url, setUrl] = useState("https://www.ycombinator.com/")
+  const [loading, setLoading] = useState(false)
+
+  const handleAnalyze = async () => {
+    if (!url) return
+
+    try {
+      setLoading(true)
+
+      const res = await fetch("/api/analyse", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url })
+      })
+
+      const data = await res.json()
+
+      console.log("analysis result:", data)
+
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="min-h-screen bg-white text-[#0F172A] selection:bg-[#2866ff]/20 font-dm-sans overflow-x-hidden">
       <style>{`
@@ -9,7 +40,6 @@ export default function Home() {
         .font-dm-sans { font-family: "DM Sans", sans-serif; }
       `}</style>
       
-      {/* --- Blueprint Infrastructure --- */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div 
           className="absolute inset-0 h-full w-full opacity-[0.04]" 
@@ -21,8 +51,7 @@ export default function Home() {
         <div className="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-[#2866ff]/10 blur-[120px] rounded-full" />
       </div>
 
-      {/* --- Slimmed Navigation --- */}
-      <nav className="relative z-50 flex items-center justify-between px-10 py-5 max-w-7xl mx-auto  border-slate-50 mb-[20px] ">
+      <nav className="relative z-50 flex items-center justify-between px-10 py-5 max-w-7xl mx-auto border-slate-50 mb-[20px] ">
         <div className="flex items-center gap-2 group cursor-pointer">
           <div className="w-8 h-8 bg-[#2866ff] rounded-lg flex items-center justify-center shadow-lg shadow-[#2866ff]/20">
             <Target className="text-white w-4.5 h-4.5" />
@@ -39,14 +68,12 @@ export default function Home() {
         </div>
 
         <div className="flex gap-3">
-          {/* Visible Outline Button */}
           <button className="px-5 py-2 rounded-xl font-bold text-[11px] uppercase tracking-wider transition border-2 border-[#2866ff] text-[#2866ff] hover:bg-[#2866ff] hover:text-white active:scale-95 shadow-sm shadow-[#2866ff]/10">
             Try For Free
           </button>
         </div>
       </nav>
 
-      {/* --- Ultra-Tight Hero Section --- */}
       <header className="relative z-10 px-8 pt-10 pb-16 max-w-6xl mx-auto text-center">
         <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-[0.2em] mb-6 border bg-[#2866ff]/5 border-[#2866ff]/20 text-[#2866ff]">
           <Zap className="w-3 h-3" /> 
@@ -64,20 +91,29 @@ export default function Home() {
           Identify UX friction and trust gaps instantly. Stop guessing and start converting with our agentic multimodal AI.
         </p>
 
-        {/* --- High-Impact Centered Terminal --- */}
         <div className="max-w-3xl mx-auto">
           <div className="p-2 bg-white rounded-[24px] border border-slate-200 shadow-[0_30px_60px_-15px_rgba(40,102,255,0.18)] flex flex-col sm:flex-row gap-2 transition-all hover:border-[#2866ff]/30 ring-1 ring-slate-100">
+            
             <div className="flex-1 flex items-center px-5">
               <Search className="w-5 h-5 text-[#2866ff] mr-3" />
               <input 
-                type="text" 
+                type="text"
+                value={url}
+                onChange={(e)=>setUrl(e.target.value)}
                 placeholder="yourwebsite.com/landing-page" 
                 className="w-full bg-transparent py-4 outline-none text-slate-900 font-medium text-lg placeholder:text-slate-300"
               />
             </div>
-            <button className="w-full sm:w-auto bg-[#2866ff] hover:bg-[#1d4ed8] text-white px-10 py-4 rounded-[18px] font-black uppercase text-[11px] tracking-widest transition-all shadow-xl shadow-[#2866ff]/30 flex items-center justify-center gap-2 group">
-              Analyze Now <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
+            <button
+              onClick={handleAnalyze}
+              disabled={loading}
+              className="w-full sm:w-auto bg-[#2866ff] hover:bg-[#1d4ed8] text-white px-10 py-4 rounded-[18px] font-black uppercase text-[11px] tracking-widest transition-all shadow-xl shadow-[#2866ff]/30 flex items-center justify-center gap-2 group"
+            >
+              {loading ? "Analyzing..." : "Analyze Now"}
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </button>
+
           </div>
           
           <div className="mt-8 flex justify-center items-center gap-10 opacity-60">
@@ -91,7 +127,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* --- Value Prop Grid --- */}
       <section className="relative z-10 px-8 py-16 border-t border-slate-50 bg-slate-50/30">
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-10">
           <FeatureItem 
